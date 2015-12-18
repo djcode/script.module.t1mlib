@@ -165,17 +165,20 @@ class t1mAddon(object):
 
       pg = self.getRequest(suburl)
       if pg != "":
+       try:
         subfile = xbmc.translatePath(os.path.join(profile, 'subtitles.srt'))
         ofile = open(subfile, 'w+')
         captions = re.compile('<p begin="(.+?)" end="(.+?)">(.+?)</p>',re.DOTALL).findall(pg)
         for idx, (cstart, cend, caption) in list(enumerate(captions, start=1)):
           cstart = cstart.replace('.',',')
           cend   = cend.replace('.',',').split('"',1)[0]
-          caption = caption.replace('<br/>','\n')
+          caption = caption.replace('<br/>','\n').strip()
           try:    caption = h.unescape(caption)
           except: pass
+          caption = caption.replace('&apos;', "'").replace('\n\n','\n')
           ofile.write( '%s\n%s --> %s\n%s\n\n' % (idx, cstart, cend, caption))
         ofile.close()
+       except: subfile = ""
     return subfile   
 
 
